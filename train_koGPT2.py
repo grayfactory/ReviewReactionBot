@@ -51,7 +51,7 @@ TOKENIZER = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2",
 
 
 class CharDataset(Dataset):
-    def __init__(self, chats, max_len=32):
+    def __init__(self, chats, max_len=40):
         self._data = chats
         self.first = True
         self.q_token = U_TKN
@@ -71,8 +71,17 @@ class CharDataset(Dataset):
         turn = self._data.iloc[idx]
         q = turn['Q']
         a = turn['A']
-        # sentiment = str(turn['label'])
         sentiment = str(turn['star_avg'])
+        if not isinstance(self.q_token, str):
+            print('** q_token'*20)
+            print(self.q_token)
+        if not isinstance(q, str):
+            print('** q'*20)
+            print(q)
+        if not isinstance(self.sent_token, str):
+            print('** sent_token'*20)
+            print(self.sent_token)   
+        # print(self.q_token,q, self.sent_token ,sentiment)
         q_toked = self.tokenizer.tokenize(self.q_token + q + \
                                           self.sent_token + sentiment)   
         q_len = len(q_toked)
@@ -125,7 +134,7 @@ class KoGPT2Chat(LightningModule):
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument('--max-len',
                             type=int,
-                            default=32,
+                            default=40,
                             help='max sentence length on input (default: 32)')
 
         parser.add_argument('--batch-size',
@@ -186,7 +195,7 @@ class KoGPT2Chat(LightningModule):
 
     def train_dataloader(self):
         # data = pd.read_csv('data/ChatbotData.csv')
-        data = pd.read_csv('data/ChatbotData_small.csv')
+        data = pd.read_csv('data/ChatbotData.csv')
         self.train_set = CharDataset(data, max_len=self.hparams.max_len)
         train_dataloader = DataLoader(
             self.train_set, batch_size=self.hparams.batch_size, num_workers=2,
