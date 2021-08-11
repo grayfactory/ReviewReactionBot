@@ -333,7 +333,7 @@ def transformer(vocab_size, num_layers, dff,
 # tf.keras.utils.plot_model(
 #     small_transformer, to_file='small_transformer.png', show_shapes=True)
 
-def loss_function(y_true, y_pred, MAX_LENGTH=40):
+def loss_function(y_true, y_pred, MAX_LENGTH):
   y_true = tf.reshape(y_true, shape=(-1, MAX_LENGTH - 1))
 
   loss = tf.keras.losses.SparseCategoricalCrossentropy(
